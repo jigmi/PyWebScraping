@@ -10,19 +10,21 @@ def request():
         soup = BeautifulSoup(source.text,'html.parser') #source.text will get the html content of the response, need to parse it through beautiful soup.
         #What soup does above will return it a beautifulsoup object
         #we found out it is within
-         
         movies = soup.find('ul',class_="ipc-metadata-list ipc-metadata-list--dividers-between sc-3a353071-0 wTPeg compact-list-view ipc-metadata-list--base",role="presentation").find_all("li") # basically 
          # code is pointed to each of these li tags containing the movie names.  #ant to ierate through each tag and access the name, also returns a list.
-        
+        rankings = {}
         for movie in movies:
-            finding = movie.find('h3',class_="ipc-title__text") #gets the element tag of the movie containing the name, gets all of it so <h3 .... >, only need the text of the tag
-            text = finding.text # gets the text inside the tags
-    
-            break
-        #for movie in movies:
-            #
-        #print(movies)
+            finding = movie.find('div',class_="sc-14dd939d-0 fBusXE cli-children") #gets the element tag of the movie containing the name, gets all of it so <h3 .... >, only need the text of the tag
+            name_rank = finding.find('h3',class_="ipc-title__text")
+            movie_year = finding.find("span",class_="sc-14dd939d-6 kHVqMR cli-title-metadata-item").text
+            text = name_rank.text.split(".") # gets the text inside the tags, also splits 1. name into rank name
+            movie_name = text[1][1:]
+            movie_rank = text[0]
+            rankings.update({movie_name:[movie_rank,movie_year]})
+        return rankings
     except Exception as e:
         print(e)
+
 if __name__ == "__main__":
-    request()
+    rankings = request()
+    print(rankings["Stand by Me"])
