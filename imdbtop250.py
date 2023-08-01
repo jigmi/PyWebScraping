@@ -1,8 +1,14 @@
 from bs4 import BeautifulSoup
-import requests
+import requests, openpyxl
+
+
 
 def request():
     try:
+        excel = openpyxl.Workbook() # creates new excel file
+        sheet = excel.active # created excel
+        sheet.title = 'Top Rated Movies' #changed sheet name
+        sheet.append(["Movie Rank","Movie Name","Year of Release"]) #added 4 column headers, i ant the scraper to load that file into the excel
         #sends a GET request and receives the response and saves it into source variable
         user_agent = {'User-agent': 'Mozilla/4.0'} #Sets user_agent because request detault is python and it will get blocked by most websites
         source = requests.get("https://www.imdb.com/chart/top/",headers = user_agent)  #cant tell an error from this
@@ -11,7 +17,7 @@ def request():
         #What soup does above will return it a beautifulsoup object
         #we found out it is within
         movies = soup.find('ul',class_="ipc-metadata-list ipc-metadata-list--dividers-between sc-3a353071-0 wTPeg compact-list-view ipc-metadata-list--base",role="presentation").find_all("li") # basically 
-         # code is pointed to each of these li tags containing the movie names.  #ant to ierate through each tag and access the name, also returns a list.
+        # code is pointed to each of these li tags containing the movie names.  #want to ierate through each tag and access the name, also returns a list.
         rankings = {}
         for movie in movies:
             finding = movie.find('div',class_="sc-14dd939d-0 fBusXE cli-children") #gets the element tag of the movie containing the name, gets all of it so <h3 .... >, only need the text of the tag
@@ -20,11 +26,10 @@ def request():
             text = name_rank.text.split(".") # gets the text inside the tags, also splits 1. name into rank name
             movie_name = text[1][1:]
             movie_rank = text[0]
-            rankings.update({movie_name:[movie_rank,movie_year]})
-        return rankings
+            sheet.append([movie_rank, movie_name, movie_year]) #appends each value to the column 
+        excel.save("Ratings.xlsx") #saves the excel file
     except Exception as e:
         print(e)
-
 if __name__ == "__main__":
-    rankings = request()
-    print(rankings["Stand by Me"])
+    request()
+
