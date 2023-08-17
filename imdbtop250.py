@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
 import requests, openpyxl
 
-
-
 def request():
     try:
         excel = openpyxl.Workbook() # creates new excel file
@@ -30,6 +28,7 @@ def request():
         excel.save("Ratings.xlsx") #saves the excel file
     except Exception as e:
         print(e)
+        
 if __name__ == "__main__":
     request()
 
